@@ -1,0 +1,76 @@
+#include<stdio.h>
+#include<string.h>
+#include<ctype.h>
+#define Max 100
+
+int top=-1;
+char stack[Max];
+
+void push(char x){
+    if(top>=Max-1){
+        printf("stack overflow. \n");
+    }
+    else{
+        top++;
+        stack[top]= x;
+    }
+}
+
+char pop(){
+    if(top==-1){
+        printf("stack underflow. \n");
+        return '\0';
+    }else{
+       char x= stack[top];
+       printf("popped out %c \n", x);
+       top--;
+       return x;
+    }
+}
+
+int precedence(char x){
+    if(x == '(') 
+        return 0;
+    if(x == '+' || x == '-')
+        return 1;
+    if(x == '*' || x == '/')
+        return 2;
+    return -1;
+}
+
+int main(){
+    char infix[Max];
+    char x;
+    printf("enter a valid infix expression: ");
+    scanf("%s", infix);
+    printf("postfix expression: ");
+    
+    for(size_t i =0 ; i<strlen(infix); i++){
+        char current = infix[i];
+
+        if(isalnum(current)){
+            printf("%c ", current);
+        }
+        else if(current == '('){
+            push(current);
+        }
+        else if(current == ')'){
+           while((x = pop()) != '(' && x != '\0'){
+            printf("%c", x);
+           }
+        }
+        else{
+            while(top!=-1 && precedence(stack[top]) >= precedence(current)){
+                printf("%c", pop());
+            }
+            push(current);
+        }
+    }
+    
+    while(top != -1){
+        printf("%c", pop());
+    }
+    
+    printf("\n");
+    return 0;
+}
