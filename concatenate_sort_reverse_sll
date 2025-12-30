@@ -1,0 +1,110 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct node {
+    int data;
+    struct node* next;
+};
+
+// Function to create a new node
+struct node* createNode(int data) {
+    struct node* newNode = (struct node*)malloc(sizeof(struct node));
+    newNode->data = data;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// 1. INSERT: Adds a node to a specific list
+void insertAtLast(struct node** headRef, int data) {
+    struct node* newNode = createNode(data);
+    if (*headRef == NULL) {
+        *headRef = newNode;
+        return;
+    }
+    struct node* temp = *headRef;
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+    temp->next = newNode;
+}
+
+// 2. CONCATENATE: Joins list2 to the end of list1
+struct node* concatenate(struct node* l1, struct node* l2) {
+    if (l1 == NULL) return l2;
+    if (l2 == NULL) return l1;
+
+    struct node* temp = l1;
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+    temp->next = l2;
+    return l1;
+}
+
+// 3. SORT: Sorts the list using Bubble Sort (Data Swap)
+void sortList(struct node* head) {
+    if (head == NULL) return;
+    struct node *i, *j;
+    int temp;
+    for (i = head; i != NULL; i = i->next) {
+        for (j = i->next; j != NULL; j = j->next) {
+            if (i->data > j->data) {
+                temp = i->data;
+                i->data = j->data;
+                j->data = temp;
+            }
+        }
+    }
+}
+
+// 4. REVERSE: Reverses the pointers of the list
+struct node* reverseList(struct node* head) {
+    struct node *prev = NULL, *current = head, *next = NULL;
+    while (current != NULL) {
+        next = current->next;
+        current->next = prev;
+        prev = current;
+        current = next;
+    }
+    return prev;
+}
+
+void displayList(struct node* head) {
+    while (head != NULL) {
+        printf("%d -> ", head->data);
+        head = head->next;
+    }
+    printf("NULL\n");
+}
+
+int main() {
+    struct node* list1 = NULL;
+    struct node* list2 = NULL;
+
+    // Creating List 1
+    insertAtLast(&list1, 30);
+    insertAtLast(&list1, 10);
+    insertAtLast(&list1, 50);
+
+    // Creating List 2
+    insertAtLast(&list2, 40);
+    insertAtLast(&list2, 20);
+
+    printf("List 1: "); displayList(list1);
+    printf("List 2: "); displayList(list2);
+
+    // Sorting List 1
+    sortList(list1);
+    printf("\nList 1 Sorted: "); displayList(list1);
+
+    // Reversing List 1
+    list1 = reverseList(list1);
+    printf("List 1 Reversed: "); displayList(list1);
+
+    // Concatenating List 1 and List 2
+    printf("\nConcatenating List 1 and List 2...\n");
+    list1 = concatenate(list1, list2);
+    displayList(list1);
+
+    return 0;
+}
