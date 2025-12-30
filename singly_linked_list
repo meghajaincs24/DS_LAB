@@ -1,0 +1,394 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *Next;
+};
+
+struct Node *head = NULL;
+
+
+struct Node *createNode(int data) {
+    struct Node *newNode = (struct Node*)malloc(sizeof(struct Node));
+    if (newNode == NULL) {
+        printf("Memory allocation failed\n");
+        exit(1);
+    }
+    newNode->data = data;
+    newNode->Next = NULL;
+    return newNode;
+}
+
+void insertAtBeginning(int data) {
+    struct Node *newNode = createNode(data);
+    newNode->Next = head;
+    head = newNode;
+    printf("Inserted %d at the beginning\n", data);
+}
+
+void insertAtEnd(int data) {
+    struct Node *newNode = createNode(data);
+
+    if (head == NULL) {
+        head = newNode;
+        printf("Inserted %d at the end\n", data);
+        return;
+    }
+
+    struct Node *temp = head;
+    while (temp->Next != NULL) {
+        temp = temp->Next;
+    }
+    temp->Next = newNode;
+    printf("Inserted %d at the end\n", data);
+}
+
+void insertAtPosition(int data, int position) {
+    if (position < 1) {
+        printf("Invalid position\n");
+        return;
+    }
+
+    if (position == 1) {
+        insertAtBeginning(data);
+        return;
+    }
+
+    struct Node *newNode = createNode(data);
+    struct Node *temp = head;
+    for (int i = 1; i < position - 1 && temp != NULL; i++) {
+        temp = temp->Next;
+    }
+
+    if (temp == NULL) {
+        printf("Invalid Position\n");
+        free(newNode);
+        return;
+    }
+
+
+    newNode->Next = temp->Next;
+    temp->Next = newNode;
+    printf("Inserted %d at position %d\n", data, position);
+}
+
+void deleteAtBeginning() {
+    if (head == NULL) {
+        printf("List is Empty\n");
+        return;
+    }
+    struct Node *temp = head;
+    head = temp->Next;
+    printf("Deleted %d from the beginning\n", temp->data);
+    free(temp);
+}
+
+void deleteAtEnd() {
+    if (head == NULL) {
+        printf("List is Empty\n");
+        return;
+    }
+
+    if (head->Next == NULL) {
+        printf("Deleted %d from the end\n", head->data);
+        free(head);
+        head = NULL;
+        return;
+    }
+
+    struct Node *temp = head;
+    struct Node *prev = NULL;
+    while (temp->Next != NULL) {
+        prev = temp;
+        temp = temp->Next;
+    }
+    printf("Deleted %d from the end\n", temp->data);
+    prev->Next = NULL;
+    free(temp);
+}
+
+void deleteAtPosition(int position) {
+    if (head == NULL) {
+        printf("List is Empty\n");
+        return;
+    }
+
+    if (position < 1) {
+        printf("Invalid position\n");
+        return;
+    }
+
+    if (position == 1) {
+        deleteAtBeginning();
+        return;
+    }
+
+    struct Node *temp = head;
+    struct Node *prev = NULL;
+
+    for (int i = 1; i < position && temp != NULL; i++) {
+        prev = temp;
+        temp = temp->Next;
+    }
+
+    if (temp == NULL) {
+        printf("Invalid position\n");
+        return;
+    }
+
+    prev->Next = temp->Next;
+    printf("Deleted %d from position %d\n", temp->data, position);
+    free(temp);
+}
+
+void display() {
+    if (head == NULL) {
+        printf("List is Empty\n");
+        return;
+    }
+
+    struct Node *temp = head;
+    printf("Linked List: ");
+    while (temp != NULL) {
+        printf("%d -> ", temp->data);
+        temp = temp->Next;
+    }
+    printf("NULL\n");
+}
+
+void search(int key) {
+    struct Node *temp = head;
+    int pos = 1;
+
+    while (temp != NULL) {
+        if (temp->data == key) {
+            printf("Value %d found at position %d\n", key, pos);
+            return;
+        }
+        temp = temp->Next;
+        pos++;
+    }
+ 
+    printf("Value %d not found in the list\n", key);
+}
+
+void reverseList() {
+    struct Node *prev = NULL;
+    struct Node *curr = head;
+    struct Node *nextNode = NULL;
+
+    while (curr != NULL) {
+        nextNode = curr->Next;   // Step 1: store next node
+        curr->Next = prev;       // Step 2: reverse pointer
+        prev = curr;             // Step 3: move prev forward
+        curr = nextNode;         // Step 4: move curr forward
+    }
+
+    head = prev;  // new head
+    printf("Linked list reversed successfully\n");
+}
+
+// --- New Function: Count number of nodes ---
+void countNodes() {
+    int count = 0;
+    struct Node *temp = head;
+
+    while (temp != NULL) {
+        count++;
+        temp = temp->Next;
+    }
+    printf("Total number of nodes: %d\n", count);
+}
+
+struct Node *head2 = NULL;
+
+void displaySecondList() {
+    if (head2 == NULL) {
+        printf("Second List is Empty\n");
+        return;
+    }
+
+    struct Node *temp = head2;
+    printf("Second List: ");
+    while (temp != NULL) {
+        printf("%d -> ", temp->data);
+        temp = temp->Next;
+    }
+    printf("NULL\n");
+}
+
+void insertAtEndOfSecondList(int data) {
+    struct Node *newNode = createNode(data);
+    if (head2 == NULL) {
+        head2 = newNode;
+        return;
+    }
+    struct Node *temp = head2;
+    while (temp->Next != NULL) {
+        temp = temp->Next;
+    }
+    temp->Next = newNode;
+}
+
+
+void concatenate() {
+    if (head == NULL) {
+        head = head2;
+    } else if (head2 != NULL) {
+        
+        struct Node *temp = head;
+        while (temp->Next != NULL) {
+            temp = temp->Next;
+        }
+        
+        temp->Next = head2;
+    }
+    
+    head2 = NULL;
+    printf("Lists concatenated successfully. Second list is now appended to the first list.\n");
+}
+
+
+struct Node* mergeSortedListsRecursive(struct Node* l1, struct Node* l2) {
+
+    if (l1 == NULL) return l2;
+    if (l2 == NULL) return l1;
+
+   
+    struct Node* result = NULL;
+    if (l1->data <= l2->data) {
+        result = l1;
+        result->Next = mergeSortedListsRecursive(l1->Next, l2);
+    } else {
+        result = l2;
+        result->Next = mergeSortedListsRecursive(l1, l2->Next);
+    }
+    return result;
+}
+
+void mergeSortedLists() {
+    // Ensure both lists exist
+    if (head == NULL && head2 == NULL) {
+        printf("Both lists are empty, nothing to merge.\n");
+        return;
+    }
+    
+    printf("Merging List 1 (head) and List 2 (head2) assuming both are sorted.\n");
+    printf("The result will be stored in List 1 (head).\n");
+
+    struct Node *mergedHead = mergeSortedListsRecursive(head, head2);
+    head = mergedHead; 
+    head2 = NULL;      
+    printf("Sorted lists merged successfully.\n");
+}
+
+
+
+int main() {
+    int choice, data, position;
+
+    while (1) {
+        printf("\n----- Singly Linked List Menu -----\n");
+        printf("1. Insert at Beginning (List 1)\n");
+        printf("2. Insert at End (List 1)\n");
+        printf("3. Insert at Position (List 1)\n");
+        printf("4. Display List 1\n");
+        printf("5. Delete from Beginning (List 1)\n");
+        printf("6. Delete from End (List 1)\n");
+        printf("7. Delete from Position (List 1)\n");
+        printf("8. Exit\n");
+        printf("9. Search an Element (List 1)\n");
+        printf("10. Reverse List 1\n");
+        printf("11. Count Nodes (List 1)\n");
+        printf("12. Insert at End (List 2 - for Concatenation/Merging)\n");
+        printf("13. Display List 2\n");
+        printf("14. Concatenate List 2 to List 1\n");
+        printf("15. Merge List 1 and List 2 (Requires sorted lists)\n");
+        printf("Enter your choice: ");
+        if (scanf("%d", &choice) != 1) {
+            printf("Invalid input\n");
+            // Clear input buffer
+            while(getchar() != '\n'); 
+            continue;
+        }
+
+        switch (choice) {
+            case 1:
+                printf("Enter value: ");
+                scanf("%d", &data);
+                insertAtBeginning(data);
+                break;
+
+            case 2:
+                printf("Enter value: ");
+                scanf("%d", &data);
+                insertAtEnd(data);
+                break;
+
+            case 3:
+                printf("Enter value: ");
+                scanf("%d", &data);
+                printf("Enter position: ");
+                scanf("%d", &position);
+                insertAtPosition(data, position);
+                break;
+
+            case 4:
+                display();
+                break;
+
+            case 5:
+                deleteAtBeginning();
+                break;
+
+            case 6:
+                deleteAtEnd();
+                break;
+
+            case 7:
+                printf("Enter position: ");
+                scanf("%d", &position);
+                deleteAtPosition(position);
+                break;
+
+            case 8:
+                exit(0);
+
+            case 9:
+                printf("Enter value to search: ");
+                scanf("%d", &data);
+                search(data);
+                break;
+            case 10: 
+                reverseList();
+                break;
+            
+            // New Cases
+            case 11:
+                countNodes();
+                break;
+            case 12:
+                printf("Enter value for List 2: ");
+                scanf("%d", &data);
+                insertAtEndOfSecondList(data);
+                printf("Inserted %d into List 2\n", data);
+                break;
+            case 13:
+                displaySecondList();
+                break;
+            case 14:
+                concatenate();
+                break;
+            case 15:
+                mergeSortedLists();
+                break;
+            // End New Cases
+
+            default:
+                printf("Invalid Choice\n");
+        }
+    }
+
+    return 0;
+};
