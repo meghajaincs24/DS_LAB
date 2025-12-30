@@ -1,49 +1,48 @@
 #include <stdio.h>
 #define SIZE 5
 
-int queue[SIZE];
-int front = -1;
-int rear = -1;
+int queue[SIZE], front = -1, rear = -1;
 
 // Check if queue is full
 int isFull() {
-    if ((rear + 1) % SIZE == front) return 1;
-    return 0;
+    return (rear + 1) % SIZE == front;
 }
 
 // Check if queue is empty
 int isEmpty() {
-    if (front == -1) return 1;
-    return 0;
+    return front == -1;
 }
 
+// Add an element
 void enqueue(int value) {
     if (isFull()) {
-        printf("Queue is Full!\n");
+        printf("Overflow! Cannot insert %d\n", value);
     } else {
-        if (front == -1) front = 0; // First element
-        rear = (rear + 1) % SIZE;   // Circular increment
+        if (front == -1) front = 0; // Set front on first insert
+        rear = (rear + 1) % SIZE;
         queue[rear] = value;
         printf("Inserted: %d\n", value);
     }
 }
 
+// Remove an element
 void dequeue() {
     if (isEmpty()) {
-        printf("Queue is Empty!\n");
+        printf("Underflow! Queue is empty\n");
     } else {
         printf("Deleted: %d\n", queue[front]);
-        if (front == rear) { // Only one element was present
+        if (front == rear) { // Reset if last element is removed
             front = rear = -1;
         } else {
-            front = (front + 1) % SIZE; // Circular increment
+            front = (front + 1) % SIZE;
         }
     }
 }
 
+// Display the queue
 void display() {
     if (isEmpty()) {
-        printf("Queue is Empty!\n");
+        printf("Queue is empty\n");
         return;
     }
     printf("Queue: ");
@@ -62,16 +61,12 @@ int main() {
     enqueue(30);
     enqueue(40);
     enqueue(50);
-    
     display();
-    
-    dequeue();
-    dequeue();
-    
-    printf("After deleting two elements:\n");
-    display();
-    
-    printf("Inserting 60 (reusing space):\n");
+
+    dequeue(); // Removes 10
+    dequeue(); // Removes 20
+
+    printf("Inserting 60 (Circular Wrap):\n");
     enqueue(60);
     display();
 
