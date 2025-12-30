@@ -5,12 +5,21 @@ int queue[SIZE];
 int front = -1;
 int rear = -1;
 
+// Function to return the front element without removing it
+void peek() {
+    if (front == -1 || front > rear) {
+        printf("Queue is empty! No element to peek.\n");
+    } else {
+        printf("Front element is: %d\n", queue[front]);
+    }
+}
+
 // Function to add an element (Enqueue)
 void enqueue(int value) {
     if (rear == SIZE - 1) {
         printf("Queue Overflow! Cannot insert %d\n", value);
     } else {
-        if (front == -1) front = 0; // Initialize front on first insertion
+        if (front == -1) front = 0; 
         rear++;
         queue[rear] = value;
         printf("Inserted %d\n", value);
@@ -25,14 +34,12 @@ void dequeue() {
         printf("Deleted %d\n", queue[front]);
         front++;
         
-        // Reset pointers if queue becomes empty
         if (front > rear) {
             front = rear = -1;
         }
     }
 }
 
-// Function to show the queue
 void display() {
     if (front == -1) {
         printf("Queue is empty\n");
@@ -49,10 +56,13 @@ int main() {
     enqueue(10);
     enqueue(20);
     enqueue(30);
+    
     display();
     
+    peek(); // Should show 10
+    
     dequeue();
-    display();
+    peek(); // Should show 20
     
     return 0;
 }
