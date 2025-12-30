@@ -6,7 +6,7 @@ struct node {
     struct node* next;
 };
 
-// Function to create a new node
+// Create a new node and return it
 struct node* createNode(int data) {
     struct node* newNode = (struct node*)malloc(sizeof(struct node));
     newNode->data = data;
@@ -14,18 +14,22 @@ struct node* createNode(int data) {
     return newNode;
 }
 
-// 1. INSERT: Adds a node to a specific list
-void insertAtLast(struct node** headRef, int data) {
+// 1. INSERT: Returns the new head of the list
+struct node* insertAtLast(struct node* head, int data) {
     struct node* newNode = createNode(data);
-    if (*headRef == NULL) {
-        *headRef = newNode;
-        return;
+    
+    // If list is empty, the new node becomes the head
+    if (head == NULL) {
+        return newNode;
     }
-    struct node* temp = *headRef;
+
+    struct node* temp = head;
     while (temp->next != NULL) {
         temp = temp->next;
     }
     temp->next = newNode;
+    
+    return head; // Return the original head
 }
 
 // 2. CONCATENATE: Joins list2 to the end of list1
@@ -41,15 +45,15 @@ struct node* concatenate(struct node* l1, struct node* l2) {
     return l1;
 }
 
-// 3. SORT: Sorts the list using Bubble Sort (Data Swap)
+// 3. SORT: Simple Bubble Sort by swapping data
 void sortList(struct node* head) {
     if (head == NULL) return;
+    
     struct node *i, *j;
-    int temp;
     for (i = head; i != NULL; i = i->next) {
         for (j = i->next; j != NULL; j = j->next) {
             if (i->data > j->data) {
-                temp = i->data;
+                int temp = i->data;
                 i->data = j->data;
                 j->data = temp;
             }
@@ -57,19 +61,23 @@ void sortList(struct node* head) {
     }
 }
 
-// 4. REVERSE: Reverses the pointers of the list
+// 4. REVERSE: Returns the new head of the reversed list
 struct node* reverseList(struct node* head) {
-    struct node *prev = NULL, *current = head, *next = NULL;
-    while (current != NULL) {
-        next = current->next;
-        current->next = prev;
-        prev = current;
-        current = next;
+    struct node *prev = NULL, *curr = head, *next = NULL;
+    while (curr != NULL) {
+        next = curr->next;
+        curr->next = prev;
+        prev = curr;
+        curr = next;
     }
     return prev;
 }
 
-void displayList(struct node* head) {
+void display(struct node* head) {
+    if (head == NULL) {
+        printf("Empty\n");
+        return;
+    }
     while (head != NULL) {
         printf("%d -> ", head->data);
         head = head->next;
@@ -78,33 +86,28 @@ void displayList(struct node* head) {
 }
 
 int main() {
-    struct node* list1 = NULL;
-    struct node* list2 = NULL;
+    struct node* l1 = NULL;
+    struct node* l2 = NULL;
 
-    // Creating List 1
-    insertAtLast(&list1, 30);
-    insertAtLast(&list1, 10);
-    insertAtLast(&list1, 50);
+    // Notice how we re-assign the head: l1 = insertAtLast(l1, data)
+    l1 = insertAtLast(l1, 30);
+    l1 = insertAtLast(l1, 10);
+    l1 = insertAtLast(l1, 50);
 
-    // Creating List 2
-    insertAtLast(&list2, 40);
-    insertAtLast(&list2, 20);
+    l2 = insertAtLast(l2, 40);
+    l2 = insertAtLast(l2, 20);
 
-    printf("List 1: "); displayList(list1);
-    printf("List 2: "); displayList(list2);
+    printf("List 1: "); display(l1);
+    printf("List 2: "); display(l2);
 
-    // Sorting List 1
-    sortList(list1);
-    printf("\nList 1 Sorted: "); displayList(list1);
+    sortList(l1);
+    printf("Sorted L1: "); display(l1);
 
-    // Reversing List 1
-    list1 = reverseList(list1);
-    printf("List 1 Reversed: "); displayList(list1);
+    l1 = reverseList(l1);
+    printf("Reversed L1: "); display(l1);
 
-    // Concatenating List 1 and List 2
-    printf("\nConcatenating List 1 and List 2...\n");
-    list1 = concatenate(list1, list2);
-    displayList(list1);
+    l1 = concatenate(l1, l2);
+    printf("Concatenated: "); display(l1);
 
     return 0;
 }
