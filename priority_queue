@@ -1,0 +1,73 @@
+#include <stdio.h>
+
+#define SIZE 5
+
+int pq[SIZE];
+int count = 0; // Tracks number of elements
+
+// Function to add an element based on priority
+void enqueue(int data) {
+    if (count == SIZE) {
+        printf("Queue Overflow!\n");
+        return;
+    }
+
+    if (count == 0) {
+        pq[count++] = data;
+    } else {
+        int i;
+        // Shift elements to make room for new data in sorted order
+        for (i = count - 1; i >= 0; i--) {
+            if (data > pq[i]) {
+                pq[i + 1] = pq[i]; // Move smaller elements to the right
+            } else {
+                break;
+            }
+        }
+        pq[i + 1] = data;
+        count++;
+    }
+    printf("Inserted: %d\n", data);
+}
+
+// Function to remove the highest priority element
+void dequeue() {
+    if (count == 0) {
+        printf("Queue Underflow!\n");
+        return;
+    }
+    // Highest priority is at index 0 in this sorted version
+    printf("Deleted (Highest Priority): %d\n", pq[0]);
+
+    // Shift remaining elements to the left
+    for (int i = 0; i < count - 1; i++) {
+        pq[i] = pq[i + 1];
+    }
+    count--;
+}
+
+void display() {
+    if (count == 0) {
+        printf("Queue is empty\n");
+        return;
+    }
+    printf("Priority Queue (High to Low): ");
+    for (int i = 0; i < count; i++) {
+        printf("%d ", pq[i]);
+    }
+    printf("\n");
+}
+
+int main() {
+    enqueue(10);
+    enqueue(30);
+    enqueue(20);
+    enqueue(40);
+
+    display();
+
+    dequeue();
+    display();
+
+    return 0;
+}
