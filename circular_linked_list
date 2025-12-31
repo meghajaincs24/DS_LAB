@@ -1,216 +1,121 @@
-#include <stdio.h>
+
+  #include <stdio.h>
 #include <stdlib.h>
 
+// Define the node
 struct Node {
     int data;
-    struct Node *next;
+    struct Node* next;
 };
 
-struct Node *head = NULL;
+// Global pointers - automatically initialized to NULL
+struct Node* head = NULL;
+struct Node* tail = NULL;
 
-struct Node* createNode(int data) {
-    struct Node *newNode = (struct Node*)malloc(sizeof(struct Node));
-    newNode->data = data;
+// Helper to create a node
+struct Node* createNode(int val) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = val;
     newNode->next = NULL;
     return newNode;
 }
 
-void insertAtBeginning(int data) {
-    struct Node *newNode = createNode(data);
-
-    // If list is empty
+// 1. INSERT AT BEGINNING
+void insertFront(int val) {
+    struct Node* newNode = createNode(val);
     if (head == NULL) {
-        head = newNode;
-        newNode->next = head;   // circular link
-        printf("Inserted  %d at beginning\n", data);
-        return;
-    }
-
-    // Otherwise find last node
-    struct Node *temp = head;
-    while (temp->next != head) {
-        temp = temp->next;
-    }
-
-    newNode->next = head;
-    temp->next = newNode;
-    head = newNode;
-
-    printf("Inserted %d at beginning\n", data);
-}
-
-void insertAtEnd(int data) {
-    struct Node *newNode = createNode(data);
-
-    if (head == NULL) {
-        head = newNode;
+        head = tail = newNode;
         newNode->next = head;
-        printf("Inserted %d at end\n", data);
-        return;
+    } else {
+        newNode->next = head;
+        head = newNode;
+        tail->next = head; // Keep it circular
     }
-
-    struct Node *temp = head;
-    while (temp->next != head) {
-        temp = temp->next;
-    }
-
-    temp->next = newNode;
-    newNode->next = head;
-
-    printf("Inserted %d at end\n", data);
 }
 
-void deleteAtBeginning() {
+// 2. INSERT AT END
+void insertEnd(int val) {
+    struct Node* newNode = createNode(val);
     if (head == NULL) {
-        printf("List is empty\n");
+        head = tail = newNode;
+        newNode->next = head;
+    } else {
+        tail->next = newNode;
+        tail = newNode;
+        tail->next = head; // Keep it circular
+    }
+}
+
+// 3. DELETE FROM BEGINNING
+void deleteFront() {
+    if (head == NULL) {
+        printf("List is empty.\n");
         return;
     }
 
-    // Only 1 node
-    if (head->next == head) {
-        printf("Deleted %d from beginning\n", head->data);
-        free(head);
-        head = NULL;
-        return;
+    struct Node* temp = head;
+    if (head == tail) { // Only one node
+        head = tail = NULL;
+    } else {
+        head = head->next;
+        tail->next = head;
     }
-
-    struct Node *temp = head;
-    struct Node *last = head;
-
-    while (last->next != head) {
-        last = last->next;
-    }
-
-    printf("Deleted %d from beginning\n", temp->data);
-
-    head = head->next;      // move head ahead
-    last->next = head;      // fix circular link
     free(temp);
 }
 
-void deleteAtEnd() {
+// 4. DELETE FROM END
+void deleteEnd() {
     if (head == NULL) {
-        printf("List is empty\n");
+        printf("List is empty.\n");
         return;
     }
 
-    // Only 1 node
-    if (head->next == head) {
-        printf("Deleted %d from end\n", head->data);
-        free(head);
-        head = NULL;
-        return;
-    }
-
-    struct Node *temp = head;
-    struct Node *prev = NULL;
-
-    while (temp->next != head) {
-        prev = temp;
-        temp = temp->next;
-    }
-
-    printf("Deleted %d from end\n", temp->data);
-
-    prev->next = head;
-    free(temp);
-}
-
-
-void search(int key) {
-    if (head == NULL) {
-        printf("List is empty\n");
-        return;
-    }
-
-    struct Node *temp = head;
-    int index = 1;
-
-    do {
-        if (temp->data == key) {
-            printf("Element %d found at position %d\n", key, index);
-            return;
+    struct Node* temp = head;
+    if (head == tail) { // Only one node case
+        head = tail = NULL;
+        free(temp);
+    } else {
+        // Must find node before tail (prev)
+        struct Node* prev = head;
+        while (prev->next != tail) {
+            prev = prev->next;
         }
-        temp = temp->next;
-        index++;
-    } while (temp != head);
-
-    printf("Element %d not found in the list\n", key);
+        struct Node* toDelete = tail;
+        tail = prev;
+        tail->next = head;
+        free(toDelete);
+    }
 }
 
-
-void traverse() {
+void display() {
     if (head == NULL) {
-        printf("List is empty\n");
+        printf("List is empty.\n");
         return;
     }
-
-    struct Node *temp = head;
-    printf("Circular Linked List: ");
-
+    struct Node* temp = head;
     do {
         printf("%d -> ", temp->data);
         temp = temp->next;
     } while (temp != head);
-
-    printf("(back to head)\n");
+    printf("(head)\n");
 }
 
-/* ------------------ MAIN MENU ------------------ */
-
 int main() {
-    int choice, data, key;
+    // No need to initialize or pass pointers!
+    insertEnd(10);
+    insertEnd(20);
+    insertFront(5);
+    
+    printf("List after insertions: ");
+    display();
 
-    while (1) {
-        printf("\n--- CIRCULAR LINKED LIST MENU ---\n");
-        printf("1. Insert at Beginning\n");
-        printf("2. Insert at End\n");
-        printf("3. Delete at Beginning\n");
-        printf("4. Delete at End\n");
-        printf("5. Search\n");
-        printf("6. Traverse\n");
-        printf("7. Exit\n");
-        printf("Enter choice: ");
-        scanf("%d", &choice);
+    deleteFront();
+    printf("After deleting front: ");
+    display();
 
-        switch (choice) {
-            case 1:
-                printf("Enter value: ");
-                scanf("%d", &data);
-                insertAtBeginning(data);
-                break;
-
-            case 2:
-                printf("Enter value: ");
-                scanf("%d", &data);
-                insertAtEnd(data);
-                break;
-
-            case 3:
-                deleteAtBeginning();
-                break;
-
-            case 4:
-                deleteAtEnd();
-                break;
-
-            case 5:
-                printf("Enter value to search: ");
-                scanf("%d", &key);
-                search(key);
-                break;
-
-            case 6:
-                traverse();
-                break;
-
-            case 7:
-                exit(0);
-
-            default:
-                printf("Invalid choice\n");
-        }
-    }
+    deleteEnd();
+    printf("After deleting end: ");
+    display();
 
     return 0;
 }
