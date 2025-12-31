@@ -1,0 +1,103 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define SIZE 10
+
+typedef struct {
+    char name[50];
+    int severity;
+} Patient;
+
+Patient queue[SIZE];
+int count = 0;
+
+// Insert patient based on severity (descending order)
+void insertPatient(char name[], int severity) {
+    if (count == SIZE) {
+        printf("Emergency room is full.\n");
+        return;
+    }
+
+    // Shift elements to the right to maintain descending order
+    int i = count - 1;
+    while (i >= 0 && queue[i].severity < severity) {
+        queue[i + 1] = queue[i];
+        i--;
+    }
+
+    strcpy(queue[i + 1].name, name);
+    queue[i + 1].severity = severity;
+    count++;
+    printf("Patient '%s' added with severity %d.\n", name, severity);
+}
+
+// Treat highest priority patient (removes from the front)
+void treatPatient() {
+    if (count == 0) {
+        printf("No patients to treat.\n");
+        return;
+    }
+
+    printf("Treating patient: %s (Severity %d)\n", queue[0].name, queue[0].severity);
+
+    // Shift everyone left to fill the gap at index 0
+    for (int i = 1; i < count; i++) {
+        queue[i - 1] = queue[i];
+    }
+    count--;
+}
+
+// Display current queue
+void displayQueue() {
+    if (count == 0) {
+        printf("No patients in queue.\n");
+        return;
+    }
+
+    printf("\n--- Current Emergency Queue ---\n");
+    for (int i = 0; i < count; i++) {
+        printf("%d. %s (Severity %d)\n", i + 1, queue[i].name, queue[i].severity);
+    }
+}
+
+int main() {
+    int choice, severity;
+    char name[50];
+
+    do {
+        printf("\n--- Hospital Emergency Room Menu ---\n");
+        printf("1. Add Patient\n");
+        printf("2. Treat Patient\n");
+        printf("3. Display Queue\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
+        
+        if (scanf("%d", &choice) != 1) break;
+        getchar(); // clear newline
+
+        switch (choice) {
+            case 1:
+                printf("Enter patient name: ");
+                fgets(name, sizeof(name), stdin);
+                name[strcspn(name, "\n")] = '\0';
+                printf("Enter severity (1–10): ");
+                scanf("%d", &severity);
+                insertPatient(name, severity);
+                break;
+            case 2:
+                treatPatient();
+                break;
+            case 3:
+                displayQueue();
+                break;
+            case 4:
+                printf("Exiting system.\n");
+                break;
+            default:
+                printf("Invalid choice.\n");
+        }
+    } while (choice != 4);
+
+    return 0;
+}
